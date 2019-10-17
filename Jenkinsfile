@@ -90,12 +90,7 @@ pipeline {
 			echo "Pipeline finalizado del repositorio de la rama ${env.BRANCH_NAME} con el codigo de construccion ${env.BUILD_ID} en ${env.JENKINS_URL}"
 		}
 		success {
-            echo 'La linea de construccion finalizo exitosamente'
-			emailext(
-				subject: "[Jenkins] La construccion fue exitosa. '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-				body: "La construccion fue exitosa.",
-				recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
-			)
+            echo 'La linea de construccion finalizo exitosamente'			
 		}
         
         failure {
