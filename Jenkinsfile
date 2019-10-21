@@ -1,5 +1,14 @@
 pipeline {
-  agent none
+	agent {
+		kubernetes {
+			containerTemplate {
+				name 'gradle'
+				image 'gradle:4.10.0-jdk8'
+				ttyEnabled true
+				command 'cat'
+			}
+		}
+	}
   
   triggers {
 	pollSCM 'H/2 * * * *'
@@ -12,17 +21,6 @@ pipeline {
   
   stages {
     stage('Config') {
-		agent {
-			kubernetes {
-				containerTemplate {
-					name 'gradle'
-					image 'gradle:4.10.0-jdk8'
-					ttyEnabled true
-					command 'cat'
-				}
-			}
-		}
-
       steps {
       	echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
 		echo "Iniciando limpieza"
@@ -31,17 +29,6 @@ pipeline {
     }
     
     stage('Build') {
-		agent {
-			kubernetes {
-				containerTemplate {
-					name 'gradle'
-					image 'gradle:4.10.0-jdk8'
-					ttyEnabled true
-					command 'cat'
-				}
-			}
-		}
-
 		steps {
 			echo "Iniciando construccion"
 			script {
@@ -58,17 +45,7 @@ pipeline {
 	
 	stage('Test') {		
 			parallel {				
-				stage('Integration Test') {
-					agent {
-						kubernetes {
-							containerTemplate {
-								name 'gradle'
-								image 'gradle:4.10.0-jdk8'
-								ttyEnabled true
-								command 'cat'
-							}
-						}
-					}
+				stage('Integration Test') {					
 					steps {
 						script {
 							try {
@@ -128,6 +105,15 @@ pipeline {
 				echo "Iniciando limpieza"
 			}			
 		}
+
+		stage("Deploy stagging enviroment") {
+            input {
+                message "Should we deploy the project?"
+            }         
+            steps {
+                echo "Desplegando entorno"
+            }
+        }
 	}	
 	
 	post {
