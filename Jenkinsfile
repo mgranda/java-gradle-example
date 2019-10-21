@@ -20,11 +20,11 @@ pipeline {
   }
   
   stages {
-    stage('Config') {
+    stage('Pre Build') {
       steps {
       	echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
 		echo "Iniciando limpieza"
-		sh 'gradle clean -x check -x test'
+		sh 'gradle- -console=plain clean -x check -x test'
       }
     }
     
@@ -34,10 +34,10 @@ pipeline {
 			script {
 				if ( env.BRANCH_NAME == 'master' ) {
 					echo "Iniciando construccion master"
-					sh 'gradle build -x check -x test'
+					sh 'gradle --console=plain build --refresh-dependencies -x test -x check'
 				}else {
 					echo "Iniciando construccion develop"
-					sh 'gradle build -x check -x test'
+					sh 'gradle --console=plain build --refresh-dependencies -x test -x check'
 				}
 			}
 		}
