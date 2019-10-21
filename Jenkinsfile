@@ -1,47 +1,46 @@
 pipeline {
-  agent {
-    kubernetes {
-      containerTemplate {
-        name 'gradle'
-        image 'gradle:4.5.1-jdk9'
-        ttyEnabled true
-        command 'cat'
-      }
-    }
-  }
+  agent none
   
   triggers {
-	  pollSCM 'H/2 * * * *'
-	}
-  
-
-	
-	options {
-		buildDiscarder(logRotator(numToKeepStr:'3'))
-        timeout(time: 30, unit: 'MINUTES')
-    }
+	pollSCM 'H/2 * * * *'
+  }
+  	
+  options {
+	buildDiscarder(logRotator(numToKeepStr:'3'))
+    timeout(time: 30, unit: 'MINUTES')
+  }
   
   stages {
     stage('Config') {
+		agent {
+			kubernetes {
+			containerTemplate {
+				name 'gradle'
+				image 'gradle:4.10.0-jdk8'
+				ttyEnabled true
+				command 'cat'
+			}
+			}
+		}
+
       steps {
       	echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
 		echo "Iniciando limpieza"
-	sh 'gradle clean -x check -x test'
-
+		sh 'gradle clean -x check -x test'
       }
     }
     
     stage('Build') {
-			steps {
-				echo "Iniciando construccion"
-				script {
-					if ( env.BRANCH_NAME == 'master' ) {
-						echo "Iniciando construccion master"
-					}else {
-						echo "Iniciando construccion develop"
-					}
+		steps {
+			echo "Iniciando construccion"
+			script {
+				if ( env.BRANCH_NAME == 'master' ) {
+					echo "Iniciando construccion master"
+				}else {
+					echo "Iniciando construccion develop"
 				}
 			}
+		}
 	}
 	
 	stage('Test') {
