@@ -24,7 +24,7 @@ pipeline {
       steps {
       	echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
 		echo "Iniciando limpieza"
-		sh 'gradle- -console=plain clean -x check -x test'
+		sh 'gradle --console=plain clean -x check -x test'
       }
     }
     
