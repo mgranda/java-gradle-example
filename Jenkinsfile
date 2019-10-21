@@ -95,14 +95,14 @@ pipeline {
 		stage('Build Docker') {
 			steps {
 				echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
-				echo "Iniciando limpieza"
+				echo "Iniciando limpieza "
 			}		
 		}
 
 		stage('Deploy registry') {
 			steps {
 				echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
-				echo "Iniciando limpieza"
+				echo "Iniciando limpieza "
 			}			
 		}
 
