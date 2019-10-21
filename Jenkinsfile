@@ -10,9 +10,9 @@ pipeline {
 		}
 	}
   
-  triggers {
+  /*triggers {
 	pollSCM 'H/2 * * * *'
-  }
+  }*/
   	
   options {
 	buildDiscarder(logRotator(numToKeepStr:'3'))
