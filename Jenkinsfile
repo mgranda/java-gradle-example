@@ -106,14 +106,14 @@ pipeline {
 			}			
 		}
 
-		stage("Deploy stagging enviroment") {
+		/*stage("Deploy stagging enviroment") {
             input {
                 message "Should we deploy the project?"
             }         
             steps {
                 echo "Desplegando entorno"
             }
-        }
+        }*/
 	}	
 	
 	post {
