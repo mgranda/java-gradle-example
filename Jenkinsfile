@@ -14,12 +14,12 @@ pipeline {
     stage('Config') {
 		agent {
 			kubernetes {
-			containerTemplate {
-				name 'gradle'
-				image 'gradle:4.10.0-jdk8'
-				ttyEnabled true
-				command 'cat'
-			}
+				containerTemplate {
+					name 'gradle'
+					image 'gradle:4.10.0-jdk8'
+					ttyEnabled true
+					command 'cat'
+				}
 			}
 		}
 
@@ -31,28 +31,43 @@ pipeline {
     }
     
     stage('Build') {
+		agent {
+			kubernetes {
+				containerTemplate {
+					name 'gradle'
+					image 'gradle:4.10.0-jdk8'
+					ttyEnabled true
+					command 'cat'
+				}
+			}
+		}
+
 		steps {
 			echo "Iniciando construccion"
 			script {
 				if ( env.BRANCH_NAME == 'master' ) {
 					echo "Iniciando construccion master"
+					sh 'gradle build -x check -x test'
 				}else {
 					echo "Iniciando construccion develop"
+					sh 'gradle build -x check -x test'
 				}
 			}
 		}
 	}
 	
 	stage('Test') {
-			parallel {
-				
+			parallel {				
 				stage('Integration Test') {
 					steps {
 						script {
 							try {
-								echo "Iniciando analisis de calidad del repositorio de la rama ${env.BRANCH_NAME}"								
+								echo "Iniciando analisis de calidad del repositorio de la rama ${env.BRANCH_NAME}"
+								sh 'gradle clean test --no-daemon' //run a gradle task							
 							} catch(Exception e) {
 								echo "Error en el analisis de calidad del repositorio de la rama ${env.BRANCH_NAME}"
+							} finally {
+								junit '**/build/test-results/test/*.xml' //make the junit test results available in any case (success & failure)
 							}
 						}
 					}
@@ -64,7 +79,7 @@ pipeline {
 					}
 				}
 				
-				stage('Unit Test') {
+				/*stage('Unit Test') {
 					stages {
 					
 						stage('Build') {
@@ -79,10 +94,31 @@ pipeline {
 							}
 						}
 					}
-				}
+				}*/
 			}
 		}
-	}
+
+		stage('Pre Build Docker') {
+			steps {
+				echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
+				echo "Iniciando limpieza"
+			}		
+		}
+
+		stage('Build Docker') {
+			steps {
+				echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
+				echo "Iniciando limpieza"
+			}		
+		}
+
+		stage('Deploy registry') {
+			steps {
+				echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
+				echo "Iniciando limpieza"
+			}			
+		}
+	}	
 	
 	post {
 		always {
