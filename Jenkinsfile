@@ -57,6 +57,16 @@ pipeline {
 	}
 	
 	stage('Test') {
+		agent {
+			kubernetes {
+				containerTemplate {
+					name 'gradle'
+					image 'gradle:4.10.0-jdk8'
+					ttyEnabled true
+					command 'cat'
+				}
+			}
+		}
 			parallel {				
 				stage('Integration Test') {
 					steps {

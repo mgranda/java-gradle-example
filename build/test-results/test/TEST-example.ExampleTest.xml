@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="example.ExampleTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2019-10-21T16:04:13" hostname="pc-smxk53" time="0.003">
+  <properties/>
+  <testcase name="testJoin" classname="example.ExampleTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
