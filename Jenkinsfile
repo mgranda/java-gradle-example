@@ -9,12 +9,16 @@ pipeline {
 			}
 		}
 	}
- 	
-  options {
-	buildDiscarder(logRotator(numToKeepStr:'3'))
-    timeout(time: 30, unit: 'MINUTES')
-  }
-  
+
+	triggers {
+        bitbucketPush()
+    }
+
+	options {
+		buildDiscarder(logRotator(numToKeepStr:'3'))
+		timeout(time: 30, unit: 'MINUTES')
+	}
+
   stages {
     stage('Pre Build') {
       steps {
@@ -29,7 +33,7 @@ pipeline {
 			echo "Iniciando construccion"
 			script {
 				if ( env.BRANCH_NAME == 'master' ) {
-					echo "Iniciando construccion master"
+					echo "Iniciando construccion master bitbucket Cloud v6"
 					sh 'gradle --console=plain build --refresh-dependencies -x test -x check'
 				}else {
 					echo "Iniciando construccion develop"
@@ -117,7 +121,7 @@ pipeline {
 			echo "Pipeline finalizado del repositorio de la rama ${env.BRANCH_NAME} con el codigo de construccion ${env.BUILD_ID} en ${env.JENKINS_URL}"
 		}
 		success {
-            echo 'La linea de construccion finalizo exitosamente'			
+            echo 'La linea de construccion finalizo exitosamente'
 		}
         
         failure {
@@ -129,3 +133,4 @@ pipeline {
         }
 	}
 }
+
