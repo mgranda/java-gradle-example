@@ -10,14 +10,14 @@ pipeline {
     }
   }
   
-  triggers {
+  /*triggers {
         bitbucketPush()
-  }
+  }*/
 
-	options {
-		buildDiscarder(logRotator(numToKeepStr:'3'))
-		timeout(time: 30, unit: 'MINUTES')
-	}
+options {
+	buildDiscarder(logRotator(numToKeepStr:'3'))
+	timeout(time: 30, unit: 'MINUTES')
+}
   
   stages {
     stage('Pre Build') {
