@@ -7,16 +7,24 @@ pipeline {
         ttyEnabled true
         command 'cat'
       }
-
     }
-
   }
+  
+  triggers {
+        bitbucketPush()
+  }
+
+	options {
+		buildDiscarder(logRotator(numToKeepStr:'3'))
+		timeout(time: 30, unit: 'MINUTES')
+	}
+  
   stages {
-    stage('Config') {
+    stage('Pre Build') {
       steps {
         echo "Rama: ${env.BRANCH_NAME},  codigo de construccion: ${env.BUILD_ID} en ${env.JENKINS_URL}"
         echo 'Iniciando limpieza'
-        sh 'gradle clean -x check -x test'
+        sh 'gradle --console=plain clean -x check -x test'
       }
     }
 
@@ -26,10 +34,10 @@ pipeline {
         script {
           if ( env.BRANCH_NAME == 'master' ) {
             echo "Iniciando construccion master"
-            sh 'gradle build -x check -x test'
+            sh 'gradle --console=plain build --refresh-dependencies -x check -x test -Penv=dev'
           }else {
             echo "Iniciando construccion develop"
-            sh 'gradle build -x check -x test'
+            sh 'gradle --console=plain build --refresh-dependencies -x check -x test -Penv=pro'
           }
         }
 
@@ -38,7 +46,7 @@ pipeline {
 
     stage('Test') {
       parallel {
-        stage('Integration Test') {
+        stage('Unit Test') {
           steps {
             script {
               try {
@@ -48,7 +56,6 @@ pipeline {
                 echo "Error en el analisis de calidad del repositorio de la rama ${env.BRANCH_NAME}"
               }
             }
-
           }
         }
 
@@ -82,14 +89,14 @@ pipeline {
       }
     }
 
-    stage('Deploy stagging enviroment') {
+    /*stage('Deploy stagging enviroment') {
       input {
         message 'Should we deploy the project?'
       }
       steps {
         echo 'Desplegando entorno'
       }
-    }
+    }*/
 
   }
   post {
@@ -111,9 +118,5 @@ pipeline {
       echo 'La linea de construccion finalizo de forma inestable'
     }
 
-  }
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '3'))
-    timeout(time: 30, unit: 'MINUTES')
   }
 }
